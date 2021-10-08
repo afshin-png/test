@@ -1,0 +1,30 @@
+#!/usr/bin/bash
+now=$(date)
+current_month=$(date +%m)
+last_year=`expr $(date +%Y) - 1`
+current_year=$(date +%Y)
+
+
+for ((i=1;i<=6;i++));do
+
+   del_month=`expr $i + $current_month`
+   if [ $del_month -gt 12 ];then
+
+        month=`expr $del_month - 12`
+        year=$current_year
+   else
+        month=$del_month
+        year=$last_year
+   fi
+   if [ $month -lt 10 ];then
+        month=$(echo "0"$month)
+   fi
+   for x in 0{1..9} {10..31};do
+
+        TBL=$(echo "acct_v7_$year"_"$month"_"$x")
+        psql -U pmacct pmacct --command="truncate TABLE $TBL"
+        echo "$now"  "Table dropped : $TBL"  >> /home/drop_pmacct_file.csv
+   done
+
+done
+~     
